@@ -1,0 +1,41 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f7f7f7;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    max-width: 600px;
+    margin: 40px auto;
+    background: #fff;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+#meal-form input {
+    padding: 8px;
+    margin-right: 4px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+#meal-form button {
+    padding: 8px 12px;
+}
+
+#meal-list {
+    list-style: none;
+    padding: 0;
+}
+
+#meal-list li {
+    padding: 6px 0;
+    border-bottom: 1px solid #eee;
+}
+
+#total {
+    font-weight: bold;
+    margin-top: 10px;
+}
