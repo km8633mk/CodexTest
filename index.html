@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ernährungstracker</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Ernährungstracker</h1>
+        <form id="meal-form">
+            <input type="text" id="meal-name" placeholder="Mahlzeit" required>
+            <input type="number" id="meal-calories" placeholder="Kalorien" required>
+            <button type="submit">Hinzufügen</button>
+        </form>
+        <ul id="meal-list"></ul>
+        <div id="total">Gesamtkalorien: <span id="total-calories">0</span></div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
