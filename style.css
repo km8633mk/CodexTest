@@ -1,41 +1,75 @@
 body {
-    font-family: Arial, sans-serif;
-    background-color: #f7f7f7;
-    margin: 0;
-    padding: 0;
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  line-height: 1.6;
 }
 
-.container {
-    max-width: 600px;
-    margin: 40px auto;
-    background: #fff;
-    padding: 20px;
-    border-radius: 5px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+.hero {
+  background: linear-gradient(135deg, #00aaff, #0066ff);
+  color: #fff;
+  text-align: center;
+  padding: 80px 20px;
 }
 
-#meal-form input {
-    padding: 8px;
-    margin-right: 4px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
+.hero .btn {
+  display: inline-block;
+  margin-top: 20px;
+  padding: 10px 20px;
+  color: #fff;
+  text-decoration: none;
+  border: 2px solid #fff;
+  border-radius: 4px;
 }
 
-#meal-form button {
-    padding: 8px 12px;
+.leistungen {
+  padding: 40px 20px;
+  text-align: center;
 }
 
-#meal-list {
-    list-style: none;
-    padding: 0;
+.leistungen .cards {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px;
+  margin-top: 20px;
 }
 
-#meal-list li {
-    padding: 6px 0;
-    border-bottom: 1px solid #eee;
+.card {
+  background: #f7f7f7;
+  padding: 20px;
+  border-radius: 5px;
+  flex: 0 0 250px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 
-#total {
-    font-weight: bold;
-    margin-top: 10px;
+.kontakt {
+  background: #f0f0f0;
+  padding: 40px 20px;
+  text-align: center;
+}
+
+#contact-form input,
+#contact-form textarea {
+  width: 100%;
+  max-width: 400px;
+  padding: 10px;
+  margin: 8px auto;
+  display: block;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+#contact-form button {
+  padding: 10px 20px;
+  border: none;
+  background: #0066ff;
+  color: #fff;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+footer {
+  text-align: center;
+  padding: 20px;
 }
