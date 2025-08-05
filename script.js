@@ -1,6 +1,7 @@
 const canvas = document.getElementById('game');
 const ctx = canvas.getContext('2d');
 const trackSelect = document.getElementById('trackSelect');
+const startButton = document.getElementById('startButton');
 
 canvas.width = 800;
 canvas.height = 600;
@@ -40,10 +41,19 @@ document.addEventListener('keyup', (e) => (keys[e.key] = false));
 let laps = 0;
 let currentTrack = trackSelect.value;
 let startLineY;
+let gameRunning = false;
 
 trackSelect.addEventListener('change', () => {
   currentTrack = trackSelect.value;
   resetTrack();
+  render();
+});
+
+startButton.addEventListener('click', () => {
+  startButton.disabled = true;
+  trackSelect.disabled = true;
+  gameRunning = true;
+  requestAnimationFrame(loop);
 });
 
 function resetTrack() {
@@ -62,6 +72,7 @@ function resetTrack() {
   laps = 0;
 }
 resetTrack();
+render();
 
 function update() {
   car.lastX = car.x;
@@ -211,13 +222,16 @@ function drawHUD() {
   ctx.fillText(`Runden: ${laps}`, 10, 25);
 }
 
-function loop() {
-  update();
+function render() {
   drawTrack();
   drawCar();
   drawHUD();
-  requestAnimationFrame(loop);
 }
 
-loop();
+function loop() {
+  if (!gameRunning) return;
+  update();
+  render();
+  requestAnimationFrame(loop);
+}
 
