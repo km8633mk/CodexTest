@@ -1,17 +1,30 @@
 const canvas = document.getElementById('game');
 const ctx = canvas.getContext('2d');
+const trackSelect = document.getElementById('trackSelect');
 
 canvas.width = 800;
 canvas.height = 600;
 
-const track = {
-  outer: 30,
-  inner: 90
+const tracks = {
+  rectangular: {
+    outer: 30,
+    inner: 90
+  },
+  oval: {
+    centerX: canvas.width / 2,
+    centerY: canvas.height / 2,
+    outerA: canvas.width / 2 - 40,
+    outerB: canvas.height / 2 - 40,
+    trackWidth: 60
+  }
 };
 
+tracks.oval.innerA = tracks.oval.outerA - tracks.oval.trackWidth;
+tracks.oval.innerB = tracks.oval.outerB - tracks.oval.trackWidth;
+
 const car = {
-  x: canvas.width / 2,
-  y: canvas.height - track.outer - 20,
+  x: 0,
+  y: 0,
   angle: -Math.PI / 2,
   speed: 0,
   width: 20,
@@ -21,12 +34,34 @@ const car = {
 };
 
 const keys = {};
-
 document.addEventListener('keydown', (e) => (keys[e.key] = true));
 document.addEventListener('keyup', (e) => (keys[e.key] = false));
 
 let laps = 0;
-const startLineY = canvas.height - track.inner;
+let currentTrack = trackSelect.value;
+let startLineY;
+
+trackSelect.addEventListener('change', () => {
+  currentTrack = trackSelect.value;
+  resetTrack();
+});
+
+function resetTrack() {
+  if (currentTrack === 'rectangular') {
+    startLineY = canvas.height - tracks.rectangular.inner;
+    car.x = canvas.width / 2;
+    car.y = canvas.height - tracks.rectangular.outer - 20;
+  } else if (currentTrack === 'oval') {
+    const t = tracks.oval;
+    startLineY = t.centerY + t.innerB;
+    car.x = t.centerX;
+    car.y = t.centerY + t.outerB - 20;
+  }
+  car.angle = -Math.PI / 2;
+  car.speed = 0;
+  laps = 0;
+}
+resetTrack();
 
 function update() {
   car.lastX = car.x;
@@ -44,41 +79,65 @@ function update() {
   car.x += Math.cos(car.angle) * car.speed;
   car.y += Math.sin(car.angle) * car.speed;
 
-  const out = track.outer;
-  const inn = track.inner;
-  const w = canvas.width;
-  const h = canvas.height;
+  if (currentTrack === 'rectangular') {
+    const out = tracks.rectangular.outer;
+    const inn = tracks.rectangular.inner;
+    const w = canvas.width;
+    const h = canvas.height;
 
-  if (car.x < out) {
-    car.x = out;
-    car.speed = 0;
-  }
-  if (car.x > w - out) {
-    car.x = w - out;
-    car.speed = 0;
-  }
-  if (car.y < out) {
-    car.y = out;
-    car.speed = 0;
-  }
-  if (car.y > h - out) {
-    car.y = h - out;
-    car.speed = 0;
-  }
+    if (car.x < out) {
+      car.x = out;
+      car.speed = 0;
+    }
+    if (car.x > w - out) {
+      car.x = w - out;
+      car.speed = 0;
+    }
+    if (car.y < out) {
+      car.y = out;
+      car.speed = 0;
+    }
+    if (car.y > h - out) {
+      car.y = h - out;
+      car.speed = 0;
+    }
 
-  if (car.x > inn && car.x < w - inn && car.y > inn && car.y < h - inn) {
-    car.x = car.lastX;
-    car.y = car.lastY;
-    car.speed = 0;
-  }
+    if (car.x > inn && car.x < w - inn && car.y > inn && car.y < h - inn) {
+      car.x = car.lastX;
+      car.y = car.lastY;
+      car.speed = 0;
+    }
 
-  if (
-    car.lastY > startLineY &&
-    car.y <= startLineY &&
-    car.x > inn &&
-    car.x < w - inn
-  ) {
-    laps++;
+    if (
+      car.lastY > startLineY &&
+      car.y <= startLineY &&
+      car.x > inn &&
+      car.x < w - inn
+    ) {
+      laps++;
+    }
+  } else if (currentTrack === 'oval') {
+    const t = tracks.oval;
+    const dx = car.x - t.centerX;
+    const dy = car.y - t.centerY;
+    if ((dx * dx) / (t.outerA * t.outerA) + (dy * dy) / (t.outerB * t.outerB) > 1) {
+      car.x = car.lastX;
+      car.y = car.lastY;
+      car.speed = 0;
+    }
+    if ((dx * dx) / (t.innerA * t.innerA) + (dy * dy) / (t.innerB * t.innerB) < 1) {
+      car.x = car.lastX;
+      car.y = car.lastY;
+      car.speed = 0;
+    }
+
+    if (
+      car.lastY > startLineY &&
+      car.y <= startLineY &&
+      Math.abs(car.x - t.centerX) < t.innerA
+    ) {
+      laps++;
+    }
   }
 }
 
@@ -86,36 +145,63 @@ function drawTrack() {
   ctx.fillStyle = '#0a5';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-  ctx.fillStyle = '#555';
-  ctx.fillRect(
-    track.outer,
-    track.outer,
-    canvas.width - track.outer * 2,
-    canvas.height - track.outer * 2
-  );
+  if (currentTrack === 'rectangular') {
+    const out = tracks.rectangular.outer;
+    const inn = tracks.rectangular.inner;
 
-  ctx.fillStyle = '#0a5';
-  ctx.fillRect(
-    track.inner,
-    track.inner,
-    canvas.width - track.inner * 2,
-    canvas.height - track.inner * 2
-  );
+    ctx.fillStyle = '#555';
+    ctx.fillRect(out, out, canvas.width - out * 2, canvas.height - out * 2);
 
-  ctx.strokeStyle = '#fff';
-  ctx.lineWidth = 2;
-  ctx.beginPath();
-  ctx.moveTo(track.inner, startLineY);
-  ctx.lineTo(canvas.width - track.inner, startLineY);
-  ctx.stroke();
+    ctx.fillStyle = '#0a5';
+    ctx.fillRect(inn, inn, canvas.width - inn * 2, canvas.height - inn * 2);
+
+    ctx.strokeStyle = '#fff';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(inn, startLineY);
+    ctx.lineTo(canvas.width - inn, startLineY);
+    ctx.stroke();
+  } else if (currentTrack === 'oval') {
+    const t = tracks.oval;
+
+    ctx.fillStyle = '#555';
+    ctx.beginPath();
+    ctx.ellipse(t.centerX, t.centerY, t.outerA, t.outerB, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.fillStyle = '#0a5';
+    ctx.beginPath();
+    ctx.ellipse(t.centerX, t.centerY, t.innerA, t.innerB, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.strokeStyle = '#fff';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(t.centerX - t.innerA, startLineY);
+    ctx.lineTo(t.centerX + t.innerA, startLineY);
+    ctx.stroke();
+  }
 }
 
 function drawCar() {
   ctx.save();
   ctx.translate(car.x, car.y);
   ctx.rotate(car.angle);
-  ctx.fillStyle = 'red';
+
+  ctx.fillStyle = 'blue';
   ctx.fillRect(-car.width / 2, -car.height / 2, car.width, car.height);
+
+  ctx.fillStyle = 'lightblue';
+  ctx.fillRect(-car.width / 2 + 2, -car.height / 2 + 5, car.width - 4, car.height / 2);
+
+  ctx.fillStyle = 'black';
+  const wheelW = 4;
+  const wheelH = car.height / 4;
+  ctx.fillRect(-car.width / 2 - wheelW, -car.height / 2, wheelW, wheelH);
+  ctx.fillRect(car.width / 2, -car.height / 2, wheelW, wheelH);
+  ctx.fillRect(-car.width / 2 - wheelW, car.height / 2 - wheelH, wheelW, wheelH);
+  ctx.fillRect(car.width / 2, car.height / 2 - wheelH, wheelW, wheelH);
+
   ctx.restore();
 }
 
